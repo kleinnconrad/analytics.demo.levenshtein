@@ -17,7 +17,6 @@ This repository is a demo and training project. It shows how the Levenshtein dis
 * [Limitations in Master Data Management](#limitations-in-master-data-management)
 * [Databricks Asset Bundles](#databricks-asset-bundles)
 * [CI/CD Pipeline (GitHub Actions)](#cicd-pipeline-github-actions)
-* [Possible Extensions](#possible-extensions)
 
 ---
 
@@ -187,14 +186,3 @@ The workflow `.github/workflows/deploy_bundle.yml` contains two jobs:
 * **Validate and Deploy Bundle:** Runs only on `main` after the first job has passed. It runs `databricks bundle validate` and `databricks bundle deploy`. The CLI authenticates with the repository secret `DATABRICKS_TOKEN` (a Databricks personal access token).
 
 Dependabot checks the Python dependencies (`uv` ecosystem, updates `pyproject.toml` and `uv.lock`) and the GitHub Actions weekly. The workflow `.github/workflows/approve-dependabot.yml` approves pull requests opened by Dependabot. Merging remains a manual step.
-
----
-
-## Possible Extensions
-
-* Compare the Levenshtein distance with Damerau-Levenshtein and Jaro-Winkler (available in the `rapidfuzz` library, which `Levenshtein` already installs).
-* Group the duplicate pairs into entities (connected components) and create a golden record per entity with survivorship rules.
-* Split the result into three classes: automatic match, manual review, and non-match.
-* Define the thresholds and the output table as job parameters instead of constants.
-* Add `dev` and `prod` targets to `databricks.yml`.
-* Implement the matching in PySpark for larger data volumes; Spark SQL provides the function `levenshtein(str1, str2)`.
