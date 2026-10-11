@@ -1,10 +1,11 @@
 [project]
 name = "levenshtein-distance-for-mdm"
 version = "0.1.0"
-description = "Levenshtein distance package"
+description = "Demo and training pipeline for duplicate detection in master data with the Levenshtein distance"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    # Keep the version in sync with the %pip install command in src/levenshtein.py.
     "Levenshtein==0.27.5",
     "pandas==3.0.6",
 ]
@@ -12,5 +13,25 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
-    "flake8>=7.0.0",
+    "ruff>=0.16.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Make the packages "src" and "data_generation" importable in the tests.
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+# src/levenshtein.py has the same name as the Levenshtein library on case-insensitive
+# file systems (Windows, macOS). This setting keeps the import order platform-independent.
+known-third-party = ["Levenshtein"]
