@@ -2,17 +2,20 @@ name: Deploy Databricks Asset Bundle
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - main
     paths:
-      - 'src/**/*.py'
-      - 'tests/**/*.py'
-      - 'resources/**/*.yml'
+      - 'src/**'
+      - 'data_generation/**'
+      - 'data/**'
+      - 'tests/**'
+      - 'resources/**'
       - 'databricks.yml'
-
-env:
-  DATABRICKS_HOST: "https://dbc-91e4a242-418c.cloud.databricks.com"
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/deploy_bundle.yml'
 
 jobs:
   test_and_lint:
@@ -32,41 +35,37 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        # --locked fails if uv.lock does not match pyproject.toml
+        run: uv sync --locked
 
-      - name: Lint with flake8
-        run: |
-          # Stop the build if there are Python syntax errors or undefined names
-          uv run flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all other issues as warnings
-          uv run flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Lint with ruff
+        run: uv run ruff check .
+
+      - name: Check formatting with ruff
+        run: uv run ruff format --check .
 
       - name: Run unit tests with pytest
-        env:
-          # This forces Python to recognize the root repository folder
-          PYTHONPATH: .
-        run: |
-          uv run pytest tests/
+        run: uv run pytest
 
   validate_and_deploy:
     name: Validate and Deploy Bundle
-    needs: test_and_lint # Ensures deployment ONLY happens if tests pass
+    needs: test_and_lint # Deploy only if tests and linting pass
+    # Pull requests are tested but never deployed
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: "https://dbc-91e4a242-418c.cloud.databricks.com"
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Setup Databricks CLI
-        uses: databricks/setup-cli@main
+        uses: databricks/setup-cli@v1.20.0
 
       - name: Validate Databricks Bundle
         run: databricks bundle validate
-        env:
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy Databricks Bundle
-        run: databricks bundle deploy -t default 
-        env:
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          
+        run: databricks bundle deploy -t default

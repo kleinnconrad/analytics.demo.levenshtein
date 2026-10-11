@@ -4,6 +4,6 @@ bundle:
 workspace:
   host: https://dbc-91e4a242-418c.cloud.databricks.com
 
-# Lade alle YAML-Dateien aus dem resources-Ordner
+# Load all job definitions from the resources folder
 include:
   - resources/*.yml
