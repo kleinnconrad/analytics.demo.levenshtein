@@ -1,4 +1,4 @@
-[![Deploy Databricks Asset Bundle](https://github.com/kleinnconrad/levenshtein-distance-for-mdm/actions/workflows/deploy_bundle.yml/badge.svg)](https://github.com/kleinnconrad/levenshtein-distance-for-mdm/actions/workflows/deploy_bundle.yml)
+[![Deploy Databricks Asset Bundle](https://github.com/kleinnconrad/analytics.demo.levenshtein/actions/workflows/deploy_bundle.yml/badge.svg)](https://github.com/kleinnconrad/analytics.demo.levenshtein/actions/workflows/deploy_bundle.yml)
 
 # Address Matching with the Levenshtein Distance
 
