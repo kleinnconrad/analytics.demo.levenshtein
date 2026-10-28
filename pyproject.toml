@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     # Keep the version in sync with the %pip install command in src/levenshtein.py.
     "Levenshtein==0.27.5",
-    "pandas==3.0.6",
+    "pandas==3.1.0",
 ]
 
 [dependency-groups]
